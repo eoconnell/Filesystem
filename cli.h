@@ -212,7 +212,7 @@ string CLI::prompt(string text, bool newline = false)
 	{
 		cout << endl;
 	}
-	return readline();
+	return readline();	// trim it here?
 }
 
 /**

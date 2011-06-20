@@ -30,6 +30,7 @@ int main()
 	printf("size of time_t: %lu\n", sizeof(time_t));
 	printf("-------------------------\n\n");
 	
+	/*
 	FILESYS filesys;
 	try 
 	{
@@ -38,8 +39,11 @@ int main()
 	catch (char * e)
 	{
 		cout << "Exception: " << e << endl;
-		filesys.reformat();
+		//filesys.reformat();
 	}
+	*/
+	SHELL sh;
+	sh.run();
 
 	return 0;
 }
