@@ -44,7 +44,7 @@ class FL {
 };
 
 /**
- *
+ * Constructor()
  *
  *
  */
@@ -59,9 +59,10 @@ FL::FL()
 }
 
 /**
- *
- *
- *
+ * name()
+ * 
+ * @param	string	new name of the file	(setter)
+ * @returns	string	the name of the file	(getter)
  */
  
 string FL::name(string newname = "")
@@ -79,9 +80,10 @@ string FL::name(string newname = "")
 }
 
 /**
+ * page()
  *
- *
- *
+ * @param	unsigned short int	page id	(setter)
+ * @returns	unsigned short int	page id	(getter)
  */
  
 unsigned short int FL::page(unsigned short int id = 0)
@@ -97,9 +99,10 @@ unsigned short int FL::page(unsigned short int id = 0)
 }
 
 /**
+ * timestamp()
  *
- *
- *
+ * @param	time_t	timestamp	(setter)
+ * @returns	time_t	timestamp	(getter)
  */
  
 time_t FL::timestamp(time_t tm = NULL)
@@ -115,9 +118,9 @@ time_t FL::timestamp(time_t tm = NULL)
 }
 
 /**
+ * type()
  *
- *
- *
+ * @returns	char	file's type
  */
  
 char FL::type()
@@ -160,8 +163,6 @@ void FL::set_data(meta datr)
  *
  */
 
- // add a ".." directory (parent pointer) and a "." directory (self pointer)
-
 class DR: public FL {
 	DR* par;
 	vector<FL*> files;
@@ -176,12 +177,8 @@ class DR: public FL {
 		
 };
 
-// have FILESYS var that points to the active directory
-
-// Using pointers to parent tree and self dir will not work for ".." & "."
-
 /**
- *
+ * Constructor()
  *
  *
  */
@@ -194,40 +191,25 @@ DR::DR()
 	data.file_id = 0;
 	par = NULL;
 }
-/*
-DR::DR(DR* dir)
-{
-	data.type = 'd';
-	file_type = 'd';
-
-	parent(dir);
-	add(this);
-}*/
 
 /**
- * tree()
+ * children()
  *
- *
+ * @returns	vector<FL*>	a collection of file objects in the directory
  */
  
 vector<FL*> DR::children()
 {
-	// files.insert(files.begin(), this);	// add itself
-	// if (par != NULL)
-	// {
-	// 	files.insert(files.begin(), par);	// add its parent if one exists
-	// }
-	// I do not think it should do this ^^^^^
 	return files;
 }
 
 /**
+ * parent()
  *
- *
- *
+ * @param 	DR*	pointer to the parent in memory	(setter)
+ * @returns	DR*	pointer to the parent in memory	(getter)
  */
  
-// todo: figure out why the fuck i cant do this
 DR * DR::parent(DR* dir = NULL)
 {
 	if (dir == NULL)
@@ -237,13 +219,14 @@ DR * DR::parent(DR* dir = NULL)
 	else
 	{
 		par = dir;
+		return NULL;
 	}
 }
 
 /**
+ * add()
  *
- *
- *
+ * @param 	FL*	pointer to the file in memory
  */
  
 void DR::add(FL* file)
@@ -252,9 +235,9 @@ void DR::add(FL* file)
 }
 
 /**
+ * add()
  *
- *
- *
+ * @param 	DR*	pointer to the directory in memory
  */
  
 void DR::add(DR* dir)

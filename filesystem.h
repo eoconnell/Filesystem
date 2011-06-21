@@ -6,14 +6,6 @@
 #include <time.h>
 #include "files.h"
 
-// I have been coding this during the two hours each day I spend on the train to work
-
-// THE IDEA
-// Load directories and files into memory as you need it.
-
-// Each directory holds its own info and a collection of files.
-// When changing directories it should create a pointer to
-// the parent directory in memory.
 
 #define PAGE_SIZE 510
 #define RECORDS_PER_PAGE (PAGE_SIZE-sizeof(page))/sizeof(meta)
@@ -27,11 +19,12 @@ class FILESYS {
 	long total_pages;
 	private:
 		void util_drive_stats();
-		void util_print_pages();
+		
 		void util_print_page(page *);
 		void util_print_meta(meta *);
 		void write_directory(DR *);
 	public:
+		void util_print_pages();
 		     FILESYS(const char*);
 		void open(const char*);		// opens the drive (file)
 		void close();				// closes the drive
@@ -39,7 +32,7 @@ class FILESYS {
 		bool make_directory(const char *);
 		bool remove_directory();
 		bool open_directory(int);
-		bool make_file(string);
+		bool make_file(const char * name);
 		bool remove_file();
 		int  allocate_page(FL*);
 		void deallocate_page(int);
@@ -129,9 +122,11 @@ void FILESYS::open(const char* fname)
 	{
 		util_drive_stats();	// gather information about the drive
 							// must be called before util_print_pages()
+		reformat();
 		cout << "\tSize: " << size << " bytes" << endl << endl;
 
 		open_directory(1);
+		make_directory("test");
 	}
 }
 
@@ -283,21 +278,19 @@ bool FILESYS::make_directory(const char * name)
 	// allocate a page for it
 	// call cwd->add(DR)
 
-	///////////////////////////////////////////////////////////////////////
-	////// USE new HERE!!!!!
-	DR make;
-	make.name(name);
+	DR * make = new DR();
+	make->name(name);
 
-	int page_id = allocate_page(&make);
+	int page_id = allocate_page(make);
 
-	make.page(page_id);
+	make->page(page_id);
 	// init meta data
 	// call cwd->add()
 	// write_directory(cwd)
 
-	cwd->add(&make);
+	cwd->add(make);
 	write_directory(cwd);
-	write_directory(&make);
+	write_directory(make);
 }
 
 /**
@@ -329,9 +322,7 @@ bool FILESYS::open_directory(int page_id)
 	cout << "OPEN_DIRECTORY @ page " << page_id << endl;
 
 	while (pg.status == 'd')
-	{
-		cout << "\tIS DIRECTORY" << endl;
-		
+	{		
 		overflow_id = pg.next;
 
 		fread((void*)&metr, sizeof(meta), 1, fp);
@@ -350,10 +341,10 @@ bool FILESYS::open_directory(int page_id)
 		else if (metr.type == 'p')
 		{
 			cout << "\tPARENT DATA" << endl;
-			DR par;
-			par.name(metr.name);
-			par.set_data(metr);
-			dir->parent(&par);	// make sure this actually works
+			DR * par = new DR();
+			par->name(metr.name);
+			par->set_data(metr);
+			dir->parent(par);	// make sure this actually works
 								// thinking run-time error
 		}
 		else if (metr.type == 'f' or metr.type == 'd')
@@ -389,7 +380,6 @@ bool FILESYS::open_directory(int page_id)
 		}
 
 		count++;
-		break;
 	}
 
 	if (valid)
@@ -454,6 +444,7 @@ void FILESYS::write_directory(DR * dir)
 	{
 		cout << "\tWrite out parent" << endl;
 		data = par->get_data();
+		data.type = 'p';
 		util_print_meta(&data);
 		fwrite((void*)&data, sizeof(meta), 1, fp);
 	}
@@ -466,7 +457,6 @@ void FILESYS::write_directory(DR * dir)
 		if (count > RECORDS_PER_PAGE)
 		{
 			cout << "\tGo to overflow page; count=" << count << endl;
-			return;
 			if (!overflow_id)
 			{
 				// need to allocate a page
@@ -485,8 +475,9 @@ void FILESYS::write_directory(DR * dir)
 		}
 
 		cout << "\tWriting meta data; count=" << count << endl;
-		//util_print_meta(&temp->get_data());
-		//fwrite((void*)&temp->get_data(), sizeof(meta), 1, fp);
+		data = temp->get_data();
+		util_print_meta(&data);
+		fwrite((void*)&data, sizeof(meta), 1, fp);
 		count++;
 	}
 
@@ -507,9 +498,17 @@ void FILESYS::write_directory(DR * dir)
  *
  */
 
-bool FILESYS::make_file(string filename)
+bool FILESYS::make_file(const char * name)
 {
-	
+	FL * make = new FL();
+	make->name(name);
+
+	int page_id = allocate_page(make);
+
+	make->page(page_id);
+
+	cwd->add(make);
+	write_directory(cwd);
 }
 
 /**
@@ -522,11 +521,47 @@ bool FILESYS::make_file(string filename)
 vector<string> FILESYS::list_directory()
 {
 	vector<string> list;
-	list.push_back("dir1");
-	list.push_back("file1");
-	list.push_back("file2");
-	list.push_back("file3");
-	list.push_back("dir2");
+	vector<FL*> test;
+
+	open_directory(2);
+
+	make_file("file1");	// bugger when writing
+	make_file("file2");
+	make_file("file3");
+	make_file("file4");
+	make_file("file5");
+	make_file("file6");
+	make_file("file7");
+	make_file("file8");
+	make_file("file9");
+	make_file("file10");
+	make_file("file11");
+	make_file("file12");
+	make_file("file13");
+	make_file("file14");
+	make_file("file15");
+	make_file("file16");
+
+
+	if (cwd->parent() != NULL)
+	{
+		list.push_back("..");
+	}
+
+	list.push_back(".");
+
+	test = cwd->children();
+
+	for(int i=0; i<test.size(); i++)
+	{
+		list.push_back(test.at(i)->name());
+	}
+	
+	// list.push_back("dir1");
+	// list.push_back("file1");
+	// list.push_back("file2");
+	// list.push_back("file3");
+	// list.push_back("dir2");
 	return list;
 }
 
@@ -585,7 +620,7 @@ void FILESYS::util_print_pages()
 		fseek(fp, location, SEEK_SET);
 		// last page so it shouldn't point to anything
 		fread((void*)&list, sizeof(page), 1, fp);
-		if (counter < 5)
+		if (counter < 20)
 		{
 		printf("\tpage %d\tlocbyte %ld\tftell %ld\tstatus %c\n", 
 				list.id, location, ftell(fp)-sizeof(page), list.status

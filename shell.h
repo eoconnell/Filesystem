@@ -96,6 +96,11 @@ bool SHELL::execute(string cmd, vector<string> args)
 		cout << endl;
 	}
 
+	if (!cmd.compare("pd"))
+	{
+		fs.util_print_pages();
+	}
+
 	// gonna be one ugly mess
 	return true;
 }
