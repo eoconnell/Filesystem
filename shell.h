@@ -30,7 +30,7 @@ void SHELL::run()
 
 	try
 	{
-		fs.open("drive5");
+		fs.open("drive5.vdsk");
 	}
 	catch (char * e)
 	{
