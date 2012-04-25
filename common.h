@@ -6,15 +6,18 @@
 #include <vector>
 
 /**
- * trim()
+ * Trims a string of any characters provided in the character list.
  *
- * Trims a string of any characters provided in the charlist.
+ * str      - String to trim.
+ * charlist - String sequence of characters to be trimmed. (optional)
  *
- * @param	string	string
- * @param	string	charlist
- * @return	string
+ * Examples
+ *
+ *     trim("    Hello World.	  ")
+ *     # => "Hello World."
+ *
+ * Returns the String after the trimmings.
  */
-
 string trim(string str, string charlist = " \t\f\v\n\r")
 {
 	int first, last;
@@ -37,17 +40,21 @@ string trim(string str, string charlist = " \t\f\v\n\r")
 }
 
 /**
- * explode()
- * 
- * Returns a vector of strings, each of which is a substring formed
- * by splitting it on boundaries formed by the string delimiter.
+ * Explodes a delimited String into a Vector of substrings.
  *
- * @param	string	delimiter
- * @param	string	string
- * @return  vector<string>
+ * str   - String sequence separated by the delimiter.
+ * delim - String delimiter.
+ *
+ * Examples
+ *
+ *     trim(Red,White,Blue", ",")
+ *     # => [0] => "Red"
+ *          [1] => "White"
+ *          [2] => "Blue"
+ *
+ * Returns a Vector of substrings found between delimiters.
  */
-
-vector<string> explode(string delim, string str)
+vector<string> explode(string str, string delim)
 {
 	size_t left  = 0;	// left bound
 	size_t right = 0;	// right bound
