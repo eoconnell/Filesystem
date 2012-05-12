@@ -38,7 +38,7 @@ class FL {
 	public:
 
 		/**
-		 * Public: Constructs a new file.
+		 * Public: Constructs a bare file.
 		 */
 		FL()
 		{
@@ -47,6 +47,12 @@ class FL {
 			data.parent_id = 0;
 			data.file_id = 0;
 			file_type = 'f';
+		}
+
+		FL(meta datr)
+		{
+			file_type = 'f';
+			set_data(datr);
 		}
 
 		/**
@@ -230,6 +236,12 @@ class DR: public FL {
 			data.parent_id = 0;
 			data.file_id = 0;
 			par = NULL;
+		}
+
+		DR(meta datr)
+		{
+			file_type = 'd';
+			set_data(datr);
 		}
 
 		//DR(DR*); // haven't quite figured out what I was thinking on this yet

@@ -29,21 +29,33 @@ int main()
 	printf("size of page: %lu\n", sizeof(page));
 	printf("size of time_t: %lu\n", sizeof(time_t));
 	printf("-------------------------\n\n");
-	
-	/*
+
+
+	DR test;
+	cout << test.name("Hello") << endl;
+
 	FILESYS filesys;
-	try 
+	// try 
+	// {
+	// 	filesys.open("drive5.vdsk");
+	// }
+	// catch (char * e)
+	// {
+	// 	cout << "Exception: " << e << endl;
+	// 	filesys.reformat();
+	// }
+
+	try
 	{
-		filesys.open("drive5");
+		filesys.open("drive5.vdsk");
 	}
 	catch (char * e)
 	{
 		cout << "Exception: " << e << endl;
-		//filesys.reformat();
 	}
-	*/
-	SHELL sh;
-	sh.run();
+
+	// SHELL sh;
+	// sh.run();
 
 	return 0;
 }

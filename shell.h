@@ -94,6 +94,11 @@ class SHELL {
 				cli.clear();
 			}
 
+			if (!cmd.compare("touch"))
+			{
+				fs.make_file(args[0]);
+			}
+
 			// gonna be one ugly mess
 			return true;
 		}
