@@ -97,6 +97,18 @@ class FILESYS {
 			fwrite((void*)&metr, sizeof(meta), 1, fp);
 		}
 
+		void read_meta_data(meta * metr, int p, int n)
+		{
+			int location = (p*PAGE_SIZE) + sizeof(page) + (n*sizeof(meta));
+			// cout << location << "-" << ftell(fp) << endl;
+
+			cli.say("read ").say(metr->name).say(" from ").color("blue").write(false);
+			cout << location << endl;
+
+			seek(location);
+			fread((void*)&metr, sizeof(meta), 1, fp);
+		}
+
 		/**
 		 * Private:
 		 */
@@ -128,14 +140,10 @@ class FILESYS {
 			meta data = dir->get_data();
 			data.type = 's';
 
-			util_print_meta(&data);
+			// util_print_meta(&data);
 
-			// seek((page_id*PAGE_SIZE)+sizeof(page));
-			// fwrite((void*)&data, sizeof(meta), 1, fp);
-			// cout << ftell(fp) << " " << count << endl;
 			write_meta_data(&data, page_id, count++);
-			// cout << ftell(fp) << " " << count << endl;
-			// count++;
+
 
 			DR * par = dir->parent();
 			if (par != NULL)
@@ -143,12 +151,9 @@ class FILESYS {
 				cout << "\tWrite out parent" << endl;
 				data = par->get_data();
 				data.type = 'p';
-				util_print_meta(&data);
-				// fwrite((void*)&data, sizeof(meta), 1, fp);
-				// count++;
-				// cout << ftell(fp) << " " << count << endl;
+				// util_print_meta(&data);
+
 				write_meta_data(&data, page_id, count++);
-				// cout << ftell(fp) << " " << count << endl;
 			}
 
 			for (int i=0; i<tree.size(); i++)
@@ -166,12 +171,13 @@ class FILESYS {
 						// point the current page to it
 						// set overflow_id to this new page_id
 						overflow_id = allocate_page(dir);
-						pg.next     = overflow_id;
+						pg.next = overflow_id;
 						cout << pg.next << endl;
 						// fseek(fp, pg.id*PAGE_SIZE, SEEK_SET);
 						util_print_page(&pg);
 						seek(pg.id*PAGE_SIZE);
 						fwrite((void*)&pg, sizeof(page), 1, fp);
+
 						seek(pg.id*PAGE_SIZE);
 						page checkpage;
 						fread((void*)&checkpage, sizeof(page), 1, fp);
@@ -193,7 +199,7 @@ class FILESYS {
 
 				// cout << "\tWriting meta data; count=" << count << " i=" << i << endl;
 				data = temp->get_data();
-				util_print_meta(&data);
+				// util_print_meta(&data);
 				// cout << "Before " << ftell(fp) << endl;
 				// fwrite((void*)&data, sizeof(meta), 1, fp);
 				// write_meta_data(&data, pg.id, count);
@@ -344,10 +350,12 @@ class FILESYS {
 					
 					z = z + 1;
 				}
+				write_directory(cwd);
+// 				open_directory(1);
 
-util_print_pages();
-open_directory(test);
-				open_directory(1);
+// util_print_pages();
+// open_directory(test);
+				open_directory(2);
 
 				// write_meta_data(NULL, 1, 0);
 				// write_meta_data(NULL, 1, 1);
@@ -401,13 +409,14 @@ open_directory(test);
 			while(ftell(fp) < size)
 			{
 				fwrite(&blank, sizeof(int), 1, fp);
+				printf("\r\033[K%ld", ftell(fp));
 			}
 
 			seek(0);
 			// count by pages since the file size might yield excess space
 			// write all pages to disk
 
-			cout << "totalpages = " << total_pages << endl;
+			cout << endl << "totalpages = " << total_pages << endl;
 
 			while (counter < total_pages)
 			{
@@ -431,6 +440,9 @@ open_directory(test);
 				);*/
 				//}
 				fwrite((void*)&free_list, sizeof(page), 1, fp);
+
+				printf("\r\033[K%f%%", (float)(counter/total_pages));
+
 				counter++;
 				location += PAGE_SIZE;
 			}
@@ -515,12 +527,14 @@ open_directory(test);
 
 				// cout << "Overflow: " << overflow_id << endl;
 				cout << ftell(fp) << endl;
-				fread((void*)&metr, sizeof(meta), 1, fp);
-				// printf("metr: fid %d\tpid %d\ttyp %c\tname %s\tpg %d\t\n",
-				// 	metr.file_id, metr.parent_id, metr.type, metr.name, metr.page_id);
+				// fread((void*)&metr, sizeof(meta), 1, fp);
+
 				cli.say("-----").color("green").write();
-				util_print_meta(&metr);
+				read_meta_data(&metr, page_id, count++);
+				printf("metr: fid %d\tpid %d\ttyp %c\tname %s\tpg %d\t\n", metr.file_id, metr.parent_id, metr.type, metr.name, metr.page_id);
 				cli.say("-----").color("red").write();
+
+				// util_print_meta(&metr);
 
 				if (metr.type == 's')
 				{
@@ -589,7 +603,7 @@ open_directory(test);
 					}
 				}
 
-				cout << count++ << endl;
+				// cout << count++ << endl;
 			}
 
 			if (valid)
@@ -619,7 +633,7 @@ open_directory(test);
 			// catch
 
 			cwd->add(newFile);
-			write_directory(cwd);
+			// write_directory(cwd);
 		}
 
 		bool remove_file();
