@@ -1,27 +1,15 @@
-#ifndef _shell_h_
-#define _shell_h_
+#include "shell.h"
+#include "common.h"
 
 #include <string>
-#include "cli.h"
+#include <iostream>
 
-class SHELL {
+using namespace std;
 
-	CLI     cli;
-	FILESYS fs;
-	string  cwd;
-	string  path;
-	public:
-		void run();
-		bool execute(string, vector<string>);
-		     ~SHELL();
-};
-
-/**
- * run()
- *
- *
- *
- */
+SHELL::~SHELL()
+{
+	cout << "~SHELL()" << endl;
+}
 
 void SHELL::run()
 {
@@ -30,7 +18,7 @@ void SHELL::run()
 
 	try
 	{
-		fs.open("drive5.vdsk");
+		fs.open("disks/drive5.vdsk");
 	}
 	catch (char * e)
 	{
@@ -40,8 +28,8 @@ void SHELL::run()
 	
 	while(true)
 	{
-		command = cli.prompt("OC-FILESYS: > ");
-		//command = cli.prompt(">>> ");
+		// command = cli.prompt("OC-FILESYS: > ");
+		command = cli.prompt(">>> ");
 		// move this to execute() when ready.
 		if (command.empty())
 		{
@@ -50,23 +38,16 @@ void SHELL::run()
 		
 		if (!command.compare("exit"))
 		{
-			cout << cli.color("Exiting.", "red") << endl;
+			cli.say("Exiting..").color("red").strike().write();
 			break;
 		}
 		
-		args = explode(" ", command);
+		args = explode(command, " ");
 		command = args.at(0);	// command to execute
 		args.erase(args.begin(), args.begin()+1);
 		execute(command, args);
 	}
 }
-
-/**
- * execute()
- *
- *
- *
- */
 
 bool SHELL::execute(string cmd, vector<string> args)
 {
@@ -81,7 +62,7 @@ bool SHELL::execute(string cmd, vector<string> args)
 		string ans = cli.prompt("Are you sure you want to reformat? Everything will be lost. [Y,N]", true);
 		if (!trim(ans).compare("Y"))
 		{
-			cli.write("Reformat..", "red");
+			cli.say("Reformat..").color("red").write();
 		}
 	}
 
@@ -101,20 +82,16 @@ bool SHELL::execute(string cmd, vector<string> args)
 		fs.util_print_pages();
 	}
 
+	if (!cmd.compare("clear"))
+	{
+		cli.clear();
+	}
+
+	if (!cmd.compare("touch"))
+	{
+		fs.make_file(args[0]);
+	}
+
 	// gonna be one ugly mess
 	return true;
 }
-
-/**
- * Deconstructor
- *
- *
- *
- */
-
-SHELL::~SHELL()
-{
-	cout << "~SHELL()" << endl;
-}
-
-#endif
