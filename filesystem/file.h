@@ -28,11 +28,13 @@ typedef struct {
 class FL {
 
 	size_t size;
-	string filename;
+
+	std::string filename;
 
 	protected:
 
 		char file_type;
+		
 		meta data;
 
 	public:
@@ -40,20 +42,9 @@ class FL {
 		/**
 		 * Public: Constructs a bare file.
 		 */
-		FL()
-		{
-			// do some timestamp shit
-			data.type = 'f';
-			data.parent_id = 0;
-			data.file_id = 0;
-			file_type = 'f';
-		}
+		FL();
 
-		FL(meta datr)
-		{
-			file_type = 'f';
-			set_data(datr);
-		}
+		FL(meta);
 
 		/**
 		 * Public: Set or get the file's name.
@@ -70,19 +61,7 @@ class FL {
 		 *
 		 * Returns the String name of the file.
 		 */
-		string name(string newname = "")
-		{
-			if (newname.empty())
-			{
-				return filename;
-			}
-			else
-			{
-				strcpy(data.name, newname.substr(0, 12).c_str());
-				filename = newname;
-				return newname;
-			}
-		}
+		std::string name(std::string newname = "");
 
 		/**
 		 * Public: Set or get the file's page id on disk.
@@ -99,17 +78,7 @@ class FL {
 		 *
 		 * Returns the file's Unsigned Short Integer page id.
 		 */
-		unsigned short int page(unsigned short int id = 0)
-		{
-			if (id)
-			{
-				data.page_id = id;
-			}
-			else
-			{
-				return data.page_id;
-			}
-		}
+		unsigned short int page(unsigned short int id = 0);
 
 		/**
 		 * Public: Set or get the file's timestamp.
@@ -126,17 +95,7 @@ class FL {
 		 *
 		 * Returns the file's time_t timestamp.
 		 */
-		time_t timestamp(time_t tm = NULL)
-		{
-			if (time == NULL)
-			{
-				return data.timestamp;
-			}
-			else
-			{
-				data.timestamp = tm;
-			}
-		}
+		time_t timestamp(time_t tm = NULL);
 
 		/**
 		 * Public: Gets the file's type.
@@ -148,10 +107,7 @@ class FL {
 		 *
 		 * Returns a Char denoting the file's type.
 		 */
-		char type()
-		{
-			return file_type;
-		}
+		char type();
 
 		/**
 		 * ######################################
@@ -191,10 +147,7 @@ class FL {
 		 *
 		 * Returns the file's meta data.
 		 */
-		meta get_data()
-		{
-			return this->data;
-		}
+		meta get_data();
 
 		/**
 		 * Public: Sets the file's meta data.
@@ -207,12 +160,7 @@ class FL {
 		 *
 		 * Returns nothing.
 		 */
-		void set_data(meta datr)
-		{
-			data = datr;
-			data.type = file_type;	// quick hack to make sure 's' or 'p' don't make it
-			filename = data.name;
-		}
+		void set_data(meta);
 };
 
 /**
@@ -222,27 +170,16 @@ class FL {
 class DR: public FL {
 
 	DR* par;
-	vector<FL*> files;
+	std::vector<FL*> files;
 
 	public:
 
 		/**
 		 * Public: Constructs a new directory.
 		 */
-		DR()
-		{
-			data.type = 'd';
-			file_type = 'd';
-			data.parent_id = 0;
-			data.file_id = 0;
-			par = NULL;
-		}
+		DR();
 
-		DR(meta datr)
-		{
-			file_type = 'd';
-			set_data(datr);
-		}
+		DR(meta);
 
 		//DR(DR*); // haven't quite figured out what I was thinking on this yet
 
@@ -251,10 +188,7 @@ class DR: public FL {
 		 *
 		 * Returns a Vector containing pointers to files in memory.
 		 */
-		vector<FL*> children()
-		{
-			return files;
-		}
+		std::vector<FL*> children();
 
 		/**
 		 * Public: Set or get the parent directory.
@@ -271,18 +205,7 @@ class DR: public FL {
 		 *
 		 * Returns a pointer to the parent directory in memory.
 		 */
-		DR * parent(DR* dir = NULL)
-		{
-			if (dir == NULL)
-			{
-				return par;
-			}
-			else
-			{
-				par = dir;
-				return NULL;
-			}
-		}
+		DR * parent(DR* dir = NULL);
 
 		/**
 		 * Public: Add a file to a directory in memory.
@@ -291,10 +214,7 @@ class DR: public FL {
 		 *
 		 * Returns nothing.
 		 */
-		void add(FL* file)
-		{
-			files.push_back(file);
-		}
+		void add(FL*);
 
 		/**
 		 * Public: Add a directory to a directory in memory.
@@ -304,11 +224,7 @@ class DR: public FL {
 		 *
 		 * Returns nothing.
 		 */
-		void add(DR* dir)
-		{
-			dir->parent(this);
-			files.push_back(dir);
-		}
+		void add(DR*);
 };
 
 #endif
